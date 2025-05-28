@@ -1,0 +1,16 @@
+services:
+  postgres_db:
+    image: postgres:14
+    container_name: PostgresUsuarios
+    restart: always
+    environment:
+      - POSTGRES_USER=user_examen
+      - POSTGRES_PASSWORD=n0t13n3!
+      - POSTGRES_DB=usuariosdb
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_db:/var/lib/postgresql/data
+volumes:
+  postgres_db:
+    driver: local

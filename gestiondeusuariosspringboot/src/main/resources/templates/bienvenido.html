@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es" xml:lang="es">
+<head>
+    <title>Bienvenido</title>
+</head>
+<body>
+<h1>Bienvenido, <span th:text="${usuario.nombre}"></span></h1>
+<ul>
+    <li><a th:href="@{/usuarios}">Gestión de Usuarios</a></li>
+    <li><a th:href="@{/tablero}">Tablero de Usuarios</a></li>
+</ul>
+</body>
+</html>

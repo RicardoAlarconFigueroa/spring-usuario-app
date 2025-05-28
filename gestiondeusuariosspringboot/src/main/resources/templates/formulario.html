@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es" xml:lang="es">
+<head><title>Formulario Usuario</title></head>
+<body>
+<h2>
+    <span th:if="${usuario.login} != null" th:text="'Editar Usuario'">Editar Usuario</span>
+    <span th:if="${usuario.login} == null" th:text="'Nuevo Usuario'">Nuevo Usuario</span>
+</h2>
+<form th:action="@{/usuarios/guardar}" th:object="${usuario}" method="post">
+    <div>
+        <label>Login:</label>
+        <input type="text" th:field="*{login}" th:readonly="${usuario.login != null}" required />
+    </div>
+    <div>
+        <label>Nombre:</label>
+        <input type="text" th:field="*{nombre}" required />
+    </div>
+    <div>
+        <label>Contraseña:</label>
+        <input type="password" th:field="*{password}" placeholder="Dejar en blanco para no cambiar" />
+    </div>
+    <div>
+        <label>Status:</label>
+        <input type="text" th:field="*{status}" />
+    </div>
+    <!-- Agrega otros campos según tu entidad -->
+    <div>
+        <button type="submit">Guardar</button>
+    </div>
+</form>
+</body>
+</html>
