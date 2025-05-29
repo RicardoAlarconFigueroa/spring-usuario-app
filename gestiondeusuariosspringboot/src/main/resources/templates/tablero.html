@@ -1,28 +1,268 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es" xml:lang="es">
-<head><title>Tablero de Usuarios</title></head>
+<head>
+    <title>Tablero de Usuarios</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .header {
+            margin-bottom: 30px;
+        }
+        
+        .status-cards {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+        
+        .status-card {
+            padding: 40px 60px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            font-size: 24px;
+            text-transform: uppercase;
+            transition: opacity 0.3s;
+            min-width: 200px;
+        }
+        
+        .status-card:hover {
+            opacity: 0.8;
+            text-decoration: none;
+            color: white;
+        }
+        
+        .activos { 
+            background-color: #7cb342;
+        }
+        
+        .inactivos { 
+            background-color: #9e9e9e;
+        }
+        
+        .revocados { 
+            background-color: #ff9800;
+        }
+        
+        .filters-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .filter-row {
+            display: flex;
+            gap: 20px;
+            align-items: end;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 200px;
+        }
+        
+        .filter-group label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        
+        .filter-group input, .filter-group select {
+            padding: 8px;
+            border: 2px solid #2196F3;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .btn-search {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .btn-search:hover {
+            background-color: #1976D2;
+        }
+        
+        .users-table {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background-color: #2196F3;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        tr:nth-child(odd) {
+            background-color: white;
+        }
+        
+        .btn-action {
+            color: #2196F3;
+            text-decoration: none;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        
+        .btn-action:hover {
+            text-decoration: underline;
+        }
+        
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .status-A { background-color: #4caf50; }
+        .status-B { background-color: #9e9e9e; }
+        .status-R { background-color: #ff9800; }
+        
+        .back-link {
+            margin-top: 20px;
+        }
+        
+        .back-link a {
+            color: #2196F3;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
 <body>
-<h2>Tablero de Usuarios</h2>
-<form method="get" th:action="@{/usuarios/tablero}">
-    <label>Filtrar por status:</label>
-    <input type="text" name="status" th:value="${statusSeleccionado}" />
-    <button type="submit">Filtrar</button>
-</form>
-<table>
-    <thead>
-        <tr>
-            <th>Login</th>
-            <th>Nombre</th>
-            <th>Status</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr th:each="usuario : ${usuarios}">
-            <td th:text="${usuario.login}"></td>
-            <td th:text="${usuario.nombre}"></td>
-            <td th:text="${usuario.status}"></td>
-        </tr>
-    </tbody>
-</table>
+    <div class="header">
+        <h1>Tablero de Usuarios</h1>
+    </div>
+
+    <!-- Tarjetas de status clickeables -->
+    <div class="status-cards">
+        <a th:href="@{/usuarios/tablero(status='A')}" class="status-card activos">
+            <div>ACTIVOS</div>
+            <div style="font-size: 18px; margin-top: 10px;" th:text="${activos}">0</div>
+        </a>
+        
+        <a th:href="@{/usuarios/tablero(status='B')}" class="status-card inactivos">
+            <div>INACTIVOS</div>
+            <div style="font-size: 18px; margin-top: 10px;" th:text="${inactivos}">0</div>
+        </a>
+        
+        <a th:href="@{/usuarios/tablero(status='R')}" class="status-card revocados">
+            <div>REVOCADOS</div>
+            <div style="font-size: 18px; margin-top: 10px;" th:text="${revocados}">0</div>
+        </a>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filters-section">
+        <form method="get" th:action="@{/usuarios/tablero}">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label>Nombre:</label>
+                    <input type="text" name="nombre" th:value="${nombreFiltro}" placeholder="Filtrar por nombre" />
+                </div>
+                
+                <div class="filter-group">
+                    <label>Fecha Alta Inicial:</label>
+                    <input type="date" name="fechaInicial" th:value="${fechaInicial}" />
+                </div>
+                
+                <div class="filter-group">
+                    <label>Fecha Alta Final:</label>
+                    <input type="date" name="fechaFinal" th:value="${fechaFinal}" />
+                </div>
+                
+                <div class="filter-group">
+                    <label>Status:</label>
+                    <select name="status">
+                        <option value="">Todos</option>
+                        <option value="A" th:selected="${statusSeleccionado == 'A'}">Activos</option>
+                        <option value="B" th:selected="${statusSeleccionado == 'B'}">Inactivos</option>
+                        <option value="R" th:selected="${statusSeleccionado == 'R'}">Revocados</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <button type="submit" class="btn-search">Buscar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Tabla de usuarios -->
+    <div class="users-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Login</th>
+                    <th>Fecha Alta</th>
+                    <th>Status</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="usuario : ${usuarios}">
+                    <td th:text="${usuario.nombre}">Nombre</td>
+                    <td th:text="${usuario.login}">Login</td>
+                    <td th:text="${#temporals.format(usuario.fechaAlta, 'dd/MM/yyyy')}">Fecha</td>
+                    <td>
+                        <span th:class="'status-badge status-' + ${usuario.status}"
+                              th:text="${usuario.status == 'A' ? 'A' : usuario.status == 'B' ? 'B' : 'R'}">A</span>
+                    </td>
+                    <td>
+                        <a th:href="@{'/usuarios/editar/' + ${usuario.login}}" class="btn-action">Editar</a>
+                        <a href="#" class="btn-action" onclick="return confirm('¿Dar de baja este usuario?');">Baja</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="back-link">
+        <p><a th:href="@{/bienvenido}">← Volver al Menú Principal</a></p>
+    </div>
 </body>
 </html>

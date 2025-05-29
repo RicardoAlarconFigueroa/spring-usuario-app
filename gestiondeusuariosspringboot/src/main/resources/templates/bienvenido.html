@@ -1,13 +1,244 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es" xml:lang="es">
 <head>
-    <title>Bienvenido</title>
+    <title>Panel Principal - Sistema de Usuarios</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            font-weight: 300;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .main-content {
+            padding: 40px 0;
+        }
+        
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .welcome-title {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .welcome-subtitle {
+            font-size: 18px;
+            color: #666;
+        }
+        
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .menu-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .menu-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+        }
+        
+        .menu-card:nth-child(1) .menu-icon {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .menu-card:nth-child(2) .menu-icon {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .menu-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .menu-description {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        
+        .stats-bar {
+            background: white;
+            margin-top: 50px;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2196F3;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+    </style>
 </head>
 <body>
-<h1>Bienvenido, <span th:text="${usuario.nombre}"></span></h1>
-<ul>
-    <li><a th:href="@{/usuarios}">Gestión de Usuarios</a></li>
-    <li><a th:href="@{/tablero}">Tablero de Usuarios</a></li>
-</ul>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1>Sistema de Gestión de Usuarios</h1>
+                <div class="user-info">
+                    <div class="user-avatar">👤</div>
+                    <span th:text="${usuario.nombre}">Usuario</span>
+                    <a href="/logout" class="logout-btn">Cerrar Sesión</a>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <main class="main-content">
+        <div class="container">
+            <div class="welcome-section">
+                <h2 class="welcome-title">¡Bienvenido, <span th:text="${usuario.nombre}">Usuario</span>!</h2>
+                <p class="welcome-subtitle">Selecciona una opción para continuar</p>
+            </div>
+            
+            <div class="menu-grid">
+                <a th:href="@{/usuarios}" class="menu-card">
+                    <div class="menu-icon">👥</div>
+                    <h3 class="menu-title">Gestión de Usuarios</h3>
+                    <p class="menu-description">
+                        Administra usuarios del sistema: crear, editar, eliminar y ver listados completos
+                    </p>
+                </a>
+                
+                <a th:href="@{/usuarios/tablero}" class="menu-card">
+                    <div class="menu-icon">📊</div>
+                    <h3 class="menu-title">Tablero de Usuarios</h3>
+                    <p class="menu-description">
+                        Visualiza estadísticas, filtros y reportes del estado de todos los usuarios
+                    </p>
+                </a>
+            </div>
+            
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-number">Sistema</div>
+                    <div class="stat-label">Activo</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">Seguro</div>
+                    <div class="stat-label">Autenticado</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">v1.0</div>
+                    <div class="stat-label">Versión</div>
+                </div>
+            </div>
+        </div>
+    </main>
 </body>
 </html>

@@ -6,6 +6,7 @@ import com.examen.usuarios.models.dao.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.time.LocalDate;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -38,9 +39,14 @@ public class UsuarioController {
 
     @PostMapping("/guardar")
     public String guardarUsuario(@ModelAttribute Usuario usuario) {
-        if (usuario.getPassword() != null){
+        // Si es edición y la contraseña está vacía, mantener la contraseña actual
+        if (usuario.getLogin() != null && (usuario.getPassword() == null || usuario.getPassword().trim().isEmpty())) {
+            Usuario usuarioExistente = usuarioRepository.findById(usuario.getLogin()).orElseThrow();
+            usuario.setPassword(usuarioExistente.getPassword());
+        } else if (usuario.getPassword() != null && !usuario.getPassword().trim().isEmpty()) {
             usuario.setPassword(usuarioService.encodePassword(usuario.getPassword()));
         }
+        
         usuarioRepository.save(usuario);
         return "redirect:/usuarios";
     }
@@ -59,13 +65,60 @@ public class UsuarioController {
 
     @GetMapping("/tablero")
     public String tableroUsuario(
-        @RequestParam(value = "status", required = false) String status, Model model) {
-        List<Usuario> usuarios = (status != null)
-            ? usuarioRepository.findAll().stream()
-            .filter(u -> status.equalsIgnoreCase(u.getStatus())).toList()
-            : usuarioRepository.findAll();
+        @RequestParam(value = "status", required = false) String status,
+        @RequestParam(value = "nombre", required = false) String nombre,
+        @RequestParam(value = "fechaInicial", required = false) String fechaInicial,
+        @RequestParam(value = "fechaFinal", required = false) String fechaFinal,
+        Model model) {
+        
+        List<Usuario> todosUsuarios = usuarioRepository.findAll();
+        List<Usuario> usuarios = todosUsuarios;
+        
+        // Filtrar por status
+        if (status != null && !status.isEmpty()) {
+            usuarios = usuarios.stream()
+                .filter(u -> status.equalsIgnoreCase(u.getStatus()))
+                .toList();
+        }
+        
+        // Filtrar por nombre
+        if (nombre != null && !nombre.isEmpty()) {
+            usuarios = usuarios.stream()
+                .filter(u -> u.getNombre().toLowerCase().contains(nombre.toLowerCase()))
+                .toList();
+        }
+        
+        // Filtrar por fecha inicial
+        if (fechaInicial != null && !fechaInicial.isEmpty()) {
+            LocalDate fechaIni = LocalDate.parse(fechaInicial);
+            usuarios = usuarios.stream()
+                .filter(u -> u.getFechaAlta().isAfter(fechaIni) || u.getFechaAlta().isEqual(fechaIni))
+                .toList();
+        }
+        
+        // Filtrar por fecha final
+        if (fechaFinal != null && !fechaFinal.isEmpty()) {
+            LocalDate fechaFin = LocalDate.parse(fechaFinal);
+            usuarios = usuarios.stream()
+                .filter(u -> u.getFechaAlta().isBefore(fechaFin) || u.getFechaAlta().isEqual(fechaFin))
+                .toList();
+        }
+        
+        // Contar por status para las tarjetas
+        long activos = todosUsuarios.stream().filter(u -> "A".equals(u.getStatus())).count();
+        long inactivos = todosUsuarios.stream().filter(u -> "B".equals(u.getStatus())).count();
+        long revocados = todosUsuarios.stream().filter(u -> "R".equals(u.getStatus())).count();
+        
+        // Agregar atributos al model
         model.addAttribute(USUARIOSC_STRING, usuarios);
         model.addAttribute("statusSeleccionado", status);
-        return "/tablero";
+        model.addAttribute("nombreFiltro", nombre);
+        model.addAttribute("fechaInicial", fechaInicial);
+        model.addAttribute("fechaFinal", fechaFinal);
+        model.addAttribute("activos", activos);
+        model.addAttribute("inactivos", inactivos);
+        model.addAttribute("revocados", revocados);
+        
+        return "tablero";
     }
 }

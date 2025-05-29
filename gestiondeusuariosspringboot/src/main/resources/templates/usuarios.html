@@ -1,34 +1,330 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es" xml:lang="es">
 <head>
-    <title>Usuarios</title>
+    <title>Gestión de Usuarios</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            font-weight: 300;
+        }
+        
+        .breadcrumb {
+            color: rgba(255,255,255,0.8);
+            font-size: 14px;
+        }
+        
+        .breadcrumb a {
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+        
+        .main-content {
+            padding: 40px 0;
+        }
+        
+        .actions-bar {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .page-title {
+            font-size: 24px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #495057;
+            border: 1px solid #dee2e6;
+        }
+        
+        .btn-secondary:hover {
+            background: #e9ecef;
+            color: #495057;
+            text-decoration: none;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            color: white;
+            font-size: 12px;
+            padding: 8px 16px;
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(244, 67, 54, 0.4);
+            color: white;
+        }
+        
+        .btn-edit {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            color: white;
+            font-size: 12px;
+            padding: 8px 16px;
+        }
+        
+        .btn-edit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(255, 152, 0, 0.4);
+            color: white;
+        }
+        
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            color: white;
+            padding: 20px 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        tr:nth-child(odd) {
+            background-color: white;
+        }
+        
+        tr:hover {
+            background-color: #e3f2fd;
+        }
+        
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-A {
+            background-color: #e8f5e8;
+            color: #2e7d32;
+        }
+        
+        .status-B {
+            background-color: #f5f5f5;
+            color: #616161;
+        }
+        
+        .status-R {
+            background-color: #fff3e0;
+            color: #ef6c00;
+        }
+        
+        .actions-cell {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        
+        .no-data-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .back-link {
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        .back-link a {
+            color: #2196F3;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-<h2>Gestión de Usuarios</h2>
-<a th:href="@{/usuarios/nuevo}">Nuevo Usuario</a>
-<table>
-    <thead>
-    <tr>
-        <th>Login</th><th>Nombre</th><th>Status</th><th>Acciones</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="usuario : ${usuarios}">
-        <td th:text="${usuario.login}"></td>
-        <td th:text="${usuario.nombre}"></td>
-        <td th:text="${usuario.status}"></td>
-        <!-- Botón editar -->
-            <td>
-                <a th:href="@{'/usuarios/editar/' + ${usuario.login}}">Editar</a>
-            </td>
-            <!-- Botón eliminar como formulario POST -->
-            <td>
-            <form th:action="@{'/usuarios/eliminar/' + ${usuario.login}}" method="post" style="display:inline;">
-                <button type="submit" onclick="return confirm('¿Seguro que deseas eliminar este usuario?');">Eliminar</button>
-            </form>
-        </td>
-    </tr>
-    </tbody>
-</table>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1>Gestión de Usuarios</h1>
+                <div class="breadcrumb">
+                    <a th:href="@{/bienvenido}">Inicio</a> / Gestión de Usuarios
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <main class="main-content">
+        <div class="container">
+            <div class="actions-bar">
+                <h2 class="page-title">Lista de Usuarios</h2>
+                <a th:href="@{/usuarios/nuevo}" class="btn btn-primary">
+                    ➕ Nuevo Usuario
+                </a>
+            </div>
+            
+            <div class="table-container">
+                <table th:if="${!usuarios.empty}">
+                    <thead>
+                        <tr>
+                            <th>Login</th>
+                            <th>Nombre Completo</th>
+                            <th>Email</th>
+                            <th>Status</th>
+                            <th>Fecha Alta</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="usuario : ${usuarios}">
+                            <td>
+                                <strong th:text="${usuario.login}">login</strong>
+                            </td>
+                            <td th:text="${usuario.nombre}">Nombre</td>
+                            <td th:text="${usuario.email ?: 'No especificado'}">Email</td>
+                            <td>
+                                <span th:class="'status-badge status-' + ${usuario.status}"
+                                      th:text="${usuario.status == 'A' ? 'Activo' : usuario.status == 'B' ? 'Inactivo' : 'Revocado'}">
+                                    Status
+                                </span>
+                            </td>
+                            <td th:text="${#temporals.format(usuario.fechaAlta, 'dd/MM/yyyy')}">Fecha</td>
+                            <td class="actions-cell">
+                                <a th:href="@{'/usuarios/editar/' + ${usuario.login}}" 
+                                   class="btn btn-edit">
+                                    ✏️ Editar
+                                </a>
+                                <form th:action="@{'/usuarios/eliminar/' + ${usuario.login}}" 
+                                      method="post" style="display:inline;">
+                                    <button type="submit" class="btn btn-danger"
+                                            onclick="return confirm('¿Seguro que deseas eliminar este usuario?');">
+                                        🗑️ Eliminar
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div th:if="${usuarios.empty}" class="no-data">
+                    <div class="no-data-icon">👥</div>
+                    <h3>No hay usuarios registrados</h3>
+                    <p>Comienza creando tu primer usuario</p>
+                    <br>
+                    <a th:href="@{/usuarios/nuevo}" class="btn btn-primary">
+                        ➕ Crear Primer Usuario
+                    </a>
+                </div>
+            </div>
+            
+            <div class="back-link">
+                <a th:href="@{/bienvenido}">
+                    ← Volver al Menú Principal
+                </a>
+            </div>
+        </div>
+    </main>
 </body>
 </html>
