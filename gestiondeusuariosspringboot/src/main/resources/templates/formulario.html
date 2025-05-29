@@ -60,6 +60,25 @@
             padding: 40px 0;
         }
         
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        
+        .alert-success {
+            background-color: #e8f5e8;
+            color: #2e7d32;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .alert-error {
+            background-color: #ffeaea;
+            color: #c62828;
+            border-left: 4px solid #f44336;
+        }
+        
         .form-container {
             background: white;
             border-radius: 15px;
@@ -269,11 +288,11 @@
     <header class="header">
         <div class="container">
             <div class="header-content">
-                <h1 th:text="${usuario.login != null ? 'Editar Usuario' : 'Nuevo Usuario'}">Formulario Usuario</h1>
+                <h1 th:text="${usuario.login != null and !usuario.login.isEmpty() ? 'Editar Usuario' : 'Nuevo Usuario'}">Formulario Usuario</h1>
                 <div class="breadcrumb">
                     <a th:href="@{/bienvenido}">Inicio</a> / 
                     <a th:href="@{/usuarios}">Usuarios</a> / 
-                    <span th:text="${usuario.login != null ? 'Editar' : 'Nuevo'}">Formulario</span>
+                    <span th:text="${usuario.login != null and !usuario.login.isEmpty() ? 'Editar' : 'Nuevo'}">Formulario</span>
                 </div>
             </div>
         </div>
@@ -281,35 +300,49 @@
     
     <main class="main-content">
         <div class="container">
+            <!-- Mensaje de éxito -->
+            <div th:if="${mensaje}" class="alert alert-success">
+                <strong>✅ Éxito:</strong>
+                <span th:text="${mensaje}">Operación exitosa</span>
+            </div>
+            
+            <!-- Mensaje de error -->
+            <div th:if="${error}" class="alert alert-error">
+                <strong>❌ Error:</strong>
+                <span th:text="${error}">Ha ocurrido un error</span>
+            </div>
+            
             <div class="form-container">
                 <div class="form-header">
-                    <h2 class="form-title" th:if="${usuario.login != null}">
+                    <h2 class="form-title" th:if="${usuario.login != null and !usuario.login.isEmpty()}">
                         <div class="form-icon">✏️</div>
                         Editar Usuario
                     </h2>
-                    <h2 class="form-title" th:if="${usuario.login == null}">
+                    <h2 class="form-title" th:if="${usuario.login == null or usuario.login.isEmpty()}">
                         <div class="form-icon">👤</div>
                         Nuevo Usuario
                     </h2>
-                    <p class="form-subtitle" th:if="${usuario.login != null}">
-                        Modifica la información del usuario existente
+                    <p class="form-subtitle" th:if="${usuario.login != null and !usuario.login.isEmpty()}">
+                        Modifica la información del usuario existente: <strong th:text="${usuario.login}"></strong>
                     </p>
-                    <p class="form-subtitle" th:if="${usuario.login == null}">
+                    <p class="form-subtitle" th:if="${usuario.login == null or usuario.login.isEmpty()}">
                         Completa la información para crear un nuevo usuario
                     </p>
                 </div>
                 
                 <form th:action="@{/usuarios/guardar}" th:object="${usuario}" method="post">
-                    <input type="hidden" th:field="*{login}" th:if="${usuario.login != null}" />
+                    <!-- Campo oculto SOLO cuando es edición y el login no está vacío -->
+                    <input type="hidden" name="loginOriginal" th:value="${usuario.login}" 
+                           th:if="${usuario.login != null and !usuario.login.isEmpty()}" />
                     
                     <div class="form-row">
                         <div class="form-group">
                             <label for="login">Login <span class="required">*</span></label>
                             <input type="text" id="login" th:field="*{login}" 
                                    class="form-control" 
-                                   th:readonly="${usuario.login != null}" 
+                                   th:readonly="${usuario.login != null and !usuario.login.isEmpty()}" 
                                    placeholder="Nombre de usuario único" required />
-                            <div class="help-text" th:if="${usuario.login == null}">
+                            <div class="help-text" th:if="${usuario.login == null or usuario.login.isEmpty()}">
                                 El login no se puede cambiar después de crear el usuario
                             </div>
                         </div>
@@ -343,8 +376,8 @@
                             <label for="password">Contraseña</label>
                             <input type="password" id="password" th:field="*{password}" 
                                    class="form-control" 
-                                   th:placeholder="${usuario.login != null ? 'Dejar en blanco para no cambiar' : 'Contraseña del usuario'}" />
-                            <div class="help-text" th:if="${usuario.login != null}">
+                                   th:placeholder="${usuario.login != null and !usuario.login.isEmpty() ? 'Dejar en blanco para no cambiar' : 'Contraseña del usuario'}" />
+                            <div class="help-text" th:if="${usuario.login != null and !usuario.login.isEmpty()}">
                                 Solo completa si deseas cambiar la contraseña actual
                             </div>
                         </div>
@@ -381,7 +414,7 @@
                     
                     <div class="btn-group">
                         <button type="submit" class="btn btn-primary">
-                            💾 Guardar Usuario
+                            💾 <span th:text="${usuario.login != null and !usuario.login.isEmpty() ? 'Actualizar Usuario' : 'Crear Usuario'}">Guardar Usuario</span>
                         </button>
                         <a th:href="@{/usuarios}" class="btn btn-secondary">
                             ↩️ Cancelar

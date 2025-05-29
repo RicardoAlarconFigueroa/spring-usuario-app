@@ -15,7 +15,8 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepository.findById(username)
+        // Usar findByLogin para consistencia
+        Usuario usuario = usuarioRepository.findByLogin(username)
             .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
         // Validar fecha de vigencia
