@@ -91,13 +91,13 @@
             box-shadow: 0 5px 15px rgba(33, 150, 243, 0.4);
         }
         
-        .error-message {
-            background-color: #ffebee;
-            color: #c62828;
+        .success-message {
+            background-color: #e8f5e8;
+            color: #2e7d32;
             padding: 12px;
             border-radius: 8px;
             margin-bottom: 20px;
-            border-left: 4px solid #f44336;
+            border-left: 4px solid #4caf50;
         }
         
         .login-footer {
@@ -130,8 +130,16 @@
             <p>Sistema de Gestión de Usuarios</p>
         </div>
         
+        <!-- Mensaje de error -->
         <div th:if="${error}" class="error-message">
-            <strong>Error:</strong> Usuario o contraseña incorrectos
+            <strong>⚠️ Error de Autenticación</strong>
+            <p th:text="${error}">Usuario o contraseña incorrectos</p>
+        </div>
+        
+        <!-- Mensaje de logout exitoso -->
+        <div th:if="${mensaje}" class="success-message">
+            <strong>✅ Éxito</strong>
+            <p th:text="${mensaje}">Operación exitosa</p>
         </div>
         
         <form th:action="@{/login}" method="post">

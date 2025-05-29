@@ -25,7 +25,7 @@ public class Usuario{
     @Column(name = "login", nullable = false, length = 20)
     private String login;
 
-    @Column(name = "\"password\"", nullable = false, length = 30) // <-- comillas para coincidir con el DDL
+    @Column(name = "\"password\"", nullable = false, length = 30)
     private String password;
 
     @Column(name = "nombre", nullable = false, length = 50)

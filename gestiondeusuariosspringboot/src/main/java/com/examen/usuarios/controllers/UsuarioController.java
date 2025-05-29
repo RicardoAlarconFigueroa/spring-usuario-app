@@ -3,6 +3,7 @@ package com.examen.usuarios.controllers;
 import com.examen.usuarios.models.entities.Usuario;
 import com.examen.usuarios.models.services.UsuarioService;
 import com.examen.usuarios.models.dao.UsuarioRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class UsuarioController {
 
     private final UsuarioService usuarioService;
     private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
     private static final String USUARIOSC_STRING = "usuarios";
 
@@ -44,7 +46,7 @@ public class UsuarioController {
             Usuario usuarioExistente = usuarioRepository.findById(usuario.getLogin()).orElseThrow();
             usuario.setPassword(usuarioExistente.getPassword());
         } else if (usuario.getPassword() != null && !usuario.getPassword().trim().isEmpty()) {
-            usuario.setPassword(usuarioService.encodePassword(usuario.getPassword()));
+            usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         }
         
         usuarioRepository.save(usuario);
