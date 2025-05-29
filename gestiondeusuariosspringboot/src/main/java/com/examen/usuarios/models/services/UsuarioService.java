@@ -68,6 +68,17 @@ public class UsuarioService {
         if (usuario.getPassword() != null && !usuario.getPassword().trim().isEmpty()) {
             usuarioExistente.setPassword(passwordEncoder.encode(usuario.getPassword()));
         }
+
+        if(usuario.getStatus().equals("R")){
+            usuarioExistente.setFechaBaja(LocalDate.now());
+            usuarioExistente.setFechaRevocado(LocalDate.now());
+            usuarioExistente.setFechaVigencia(null);
+        } else if (usuario.getStatus().equals("B")) {
+            usuarioExistente.setFechaVigencia(null);
+        } else {
+            usuarioExistente.setFechaBaja(null);
+            usuarioExistente.setFechaRevocado(null);
+        }
         // Si password es null o vacío, mantener la contraseña existente (no hacer nada)
 
         return usuarioRepository.save(usuarioExistente);
